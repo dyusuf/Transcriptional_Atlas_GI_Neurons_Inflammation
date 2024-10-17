@@ -15,16 +15,16 @@ A  ranscriptional atlas of gut-innervating neurons reveals activation of the int
 ## Available Resources
 
 ### Data
-- **[Raw Data](../data/raw/)**: Contains raw RNA-seq count data used for the analyses.
-- **[Processed Data](../data/processed/)**: Includes normalized count data, making it easier for replication and further analysis.
+- **[Raw Data](data/raw/)**: Contains raw RNA-seq count data used for the analyses.
+- **[Processed Data](data/processed/)**: Includes normalized count data, making it easier for replication and further analysis.
 
 ### Analysis
 Each analysis report is available in HTML format and can be viewed below:
 
-- [DRG GO Term Enrichment Analysis](../analysis/DRG_DGE_GO_Analysis.html)
-- [ENS GO Term Enrichment Analysis](../analysis/ENS_DGE_GO_Analysis.html)
-- [SMG GO Term Enrichment Analysis](../analysis/SMG_DGE_GO_Analysis.html)
-- [VG GO Term Enrichment Analysis](../analysis/VG_DGE_GO_Analysis.html)
+- [DRG GO Term Enrichment Analysis](analysis/DRG_DGE_GO_Analysis.html)
+- [ENS GO Term Enrichment Analysis](analysis/ENS_DGE_GO_Analysis.html)
+- [SMG GO Term Enrichment Analysis](analysis/SMG_DGE_GO_Analysis.html)
+- [VG GO Term Enrichment Analysis](analysis/VG_DGE_GO_Analysis.html)
 
 ### Methodology
 The analysis was conducted using the following workflow:
@@ -34,10 +34,10 @@ The analysis was conducted using the following workflow:
 
 ## Instructions to Reproduce
 You can reproduce the analysis by running the following RMarkdown files:
-- **[DRG Analysis](../analysis/DRG_DGE_GO_Analysis.Rmd)**
-- **[ENS Analysis](../analysis/ENS_DGE_GO_Analysis.Rmd)**
-- **[SMG Analysis](../analysis/SMG_DGE_GO_Analysis.Rmd)**
-- **[VG Analysis](../analysis/VG_DGE_GO_Analysis.Rmd)**
+- **[DRG Analysis](analysis/DRG_DGE_GO_Analysis.Rmd)**
+- **[ENS Analysis](analysis/ENS_DGE_GO_Analysis.Rmd)**
+- **[SMG Analysis](analysis/SMG_DGE_GO_Analysis.Rmd)**
+- **[VG Analysis](analysis/VG_DGE_GO_Analysis.Rmd)**
 
 ## Contact
 For further information or inquiries, feel free to reach out via the GitHub repository's issue tracker or contact us directly.
