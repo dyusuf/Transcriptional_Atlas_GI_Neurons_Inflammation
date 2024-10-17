@@ -15,8 +15,8 @@ A  ranscriptional atlas of gut-innervating neurons reveals activation of the int
 ## Available Resources
 
 ### Data
-- **[Raw Data](data/raw/)**: Contains raw RNA-seq count data used for the analyses.
-- **[Processed Data](data/processed/)**: Includes normalized count data, making it easier for replication and further analysis.
+- **[Raw Data](https://github.com/dyusuf/Transcriptional_Atlas_GI_Neurons_Inflammation/tree/main/data/raw/)**: Contains raw RNA-seq count data used for the analyses.
+- **[Processed Data](https://github.com/dyusuf/Transcriptional_Atlas_GI_Neurons_Inflammation/tree/main/data/processed)**: Includes normalized count data, making it easier for replication and further analysis.
 
 ### Analysis
 Each analysis report is available in HTML format and can be viewed below:
