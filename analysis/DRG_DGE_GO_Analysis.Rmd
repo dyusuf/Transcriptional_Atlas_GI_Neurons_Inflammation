@@ -1,5 +1,6 @@
 ---
 title: "DRGs in inflammation: DGE & GSEA"
+author: "Patrycja Monika Topczewska"
 date: "`r Sys.Date()`"
 output:
       html_document:
@@ -21,11 +22,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # load importante libraries
 
-library("DESeq2")
-library("limma")
-library("gProfileR")
-library("httr")
-library("RJSONIO")
+library(DESeq2)
+library(limma)
+library(gProfileR)
+library(httr)
+library(RJSONIO)
 library(pheatmap)
 library(dbplyr)
 library(dplyr)
@@ -37,22 +38,21 @@ library(plotly)
 library(RColorBrewer)
 library(viridis)
 library(readxl)
-#library(DEGreport)
 library(htmltools)
 library(vctrs)
 library(EnhancedVolcano)
 library(readr)
-library("topGO")
-library("org.Mm.eg.db")
-library("AnnotationDbi")
-library("DOSE")
-library("GO.db")
-library("GSEABase")
-library("clusterProfiler")
-library("tidyr")
-library("stringr")
-library("rWikiPathways")
-library("RCy3")
+library(topGO)
+library(org.Mm.eg.db)
+library(AnnotationDbi)
+library(DOSE)
+library(GO.db)
+library(GSEABase)
+library(clusterProfiler)
+library(tidyr)
+library(stringr)
+library(rWikiPathways)
+library(RCy3)
 library(ReactomePA)
 library(scales)
 library(gridExtra)
@@ -75,12 +75,6 @@ library(gtExtras)
 
 ```{r Import data, echo=FALSE,warning=FALSE,message = FALSE}
 
-### counts
-#
-# counts.drg <- as.data.frame(read_excel("DRG/Counts/DRG_Counts.xlsx"))
-# counts.drg <- as.data.frame(read_excel("DRG/Counts/DRG_Counts.xlsx"))
-# counts.smg <- as.data.frame(read_excel("SMG/Counts/SMG_Counts.xlsx"))
-# counts.vg <- as.data.frame(read_excel("VG/Counts/VG_Counts.xlsx"))
 
 
 #### norm counts
@@ -95,12 +89,6 @@ rownames(nc) <- nc$gene_name
 
 ### DESeq2
 
-
-drg.nippo <- read_excel("../data/processed/DRG_DESeq2_Nippo.xlsx")
-drg.dss <- read_excel("../data/processed/DRG_DESeq2_DSS.xlsx")
-drg.th17 <- read_excel("../data/processed/DRG_DESeq2_Th17.xlsx")
-
-
 ## for Volcano
 
 drg.nippo.v <- read.delim("../data/raw/DESeq2_DRG_Nippo_results.tabular", header=F)
@@ -108,9 +96,9 @@ drg.dss.v <- read.delim("../data/raw/DESeq2_DRG_DSS_results.tabular", header=F)
 drg.th17.v <- read.delim("../data/raw/DESeq2_DRG_Th17_results.tabular", header=F)
 
 
-colnames(drg.nippo.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-colnames(drg.dss.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-colnames(drg.th17.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
+colnames(drg.nippo.v) <- c("GeneID","BaseMean","Log2FC","StdErr","WaldStat","pval","padj")
+colnames(drg.dss.v) <- c("GeneID","BaseMean","Log2FC","StdErr","WaldStat","pval","padj")
+colnames(drg.th17.v) <- c("GeneID","BaseMean","Log2FC","StdErr","WaldStat","pval","padj")
 
 
 anno_df <- data.frame(GeneID = drg.nippo.v$GeneID, stringsAsFactors = FALSE)
@@ -138,6 +126,22 @@ anno_df$GeneName <- mapIds(org.Mm.eg.db,
 drg.th17.v <- merge(drg.th17.v, anno_df, by = "GeneID", all=TRUE)
 
 
+drg.nippo <- drg.nippo.v
+drg.nippo <- drg.nippo[drg.nippo$BaseMean > 30, ]
+drg.nippo <- drg.nippo[drg.nippo$padj <= 0.05, ]
+drg.nippo <- na.omit(drg.nippo)
+
+drg.dss <- drg.dss.v
+drg.dss <- drg.dss[drg.dss$BaseMean > 30, ]
+drg.dss <- drg.dss[drg.dss$padj <= 0.05, ]
+drg.dss <- na.omit(drg.dss)
+
+drg.th17 <- drg.th17.v
+drg.th17 <- drg.th17[drg.th17$BaseMean > 30, ]
+drg.th17 <- drg.th17[drg.th17$padj <= 0.05, ]
+drg.th17 <- na.omit(drg.th17)
+
+
 ```
 
 # DESeq2
@@ -147,13 +151,13 @@ drg.th17.v <- merge(drg.th17.v, anno_df, by = "GeneID", all=TRUE)
 ```{r DGESeq2 Results Nippo, echo=FALSE, paged.print=TRUE, results='asis',warning=FALSE}
 
 
-drg.nippo <- na.omit(drg.nippo)
-drg.nippo <- transform(drg.nippo, pvalue=sapply(pvalue, formatC, format = "e", digits=3))
-drg.nippo <- transform(drg.nippo, padj=sapply(padj, formatC, format = "e", digits=3))
-drg.nippo <-drg.nippo  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "Wald-Stats"), funs(round(., 3)))
+
+drg.nippo1 <- transform(drg.nippo, pvalue=sapply(pval, formatC, format = "e", digits=3))
+drg.nippo1 <- transform(drg.nippo1, padj=sapply(padj, formatC, format = "e", digits=3))
+drg.nippo1 <- drg.nippo1  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "WaldStat"), funs(round(., 3)))
 
 
-drg.nippo %>%
+drg.nippo1 %>%
   gt() %>%
   tab_header(
     title = 'DGE: DRG Nippo vs Naive',
@@ -182,13 +186,13 @@ drg.nippo %>%
 ```{r DGESeq2 Results DSS, echo=FALSE, paged.print=TRUE, results='asis',warning=FALSE}
 
 
-drg.dss <- na.omit(drg.dss)
-drg.dss <- transform(drg.dss, pvalue=sapply(pvalue, formatC, format = "e", digits=3))
-drg.dss <- transform(drg.dss, padj=sapply(padj, formatC, format = "e", digits=3))
-drg.dss <-drg.dss  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "Wald-Stats"), funs(round(., 3)))
+
+drg.dss1 <- transform(drg.dss, pvalue=sapply(pval, formatC, format = "e", digits=3))
+drg.dss1 <- transform(drg.dss1, padj=sapply(padj, formatC, format = "e", digits=3))
+drg.dss1 <-drg.dss1  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "WaldStat"), funs(round(., 3)))
 
 
-drg.dss %>%
+drg.dss1 %>%
   gt() %>%
   tab_header(
     title = 'DGE: DRG DSS vs Naive',
@@ -217,13 +221,13 @@ drg.dss %>%
 ```{r DGESeq2 Results th17, echo=FALSE, paged.print=TRUE, results='asis',warning=FALSE}
 
 
-drg.th17 <- na.omit(drg.th17)
-drg.th17 <- transform(drg.th17, pvalue=sapply(pvalue, formatC, format = "e", digits=3))
-drg.th17 <- transform(drg.th17, padj=sapply(padj, formatC, format = "e", digits=3))
-drg.th17 <-drg.th17  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "Wald-Stats"), funs(round(., 3)))
+
+drg.th171 <- transform(drg.th17, pvalue=sapply(pval, formatC, format = "e", digits=3))
+drg.th171 <- transform(drg.th171, padj=sapply(padj, formatC, format = "e", digits=3))
+drg.th171 <-drg.th17  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "WaldStat"), funs(round(., 3)))
 
 
-drg.th17 %>%
+drg.th171 %>%
   gt() %>%
   tab_header(
     title = 'DGE: DRG Th17 vs Naive',
@@ -381,7 +385,7 @@ Gene Lists are filtered for Log2FoldChange: upregulated \> 1.5 & downregulated \
 
 ## DRG Nippo
 
-drg.nippo <- drg.nippo[drg.nippo$BaseMean > 30, ]
+
 
 up.genes <- drg.nippo[drg.nippo$Log2FC > 1.5, ]
 up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
@@ -389,14 +393,14 @@ up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
 dn.genes <- drg.nippo[drg.nippo$Log2FC < -1.5, ]
 dn.genes.ordered <- dn.genes[order(up.genes$Log2FC, decreasing = FALSE),]
 
-multi_gp_drg_nippo = gost(list("up-regulated" = up.genes.ordered$gene_name,
-                     "down-regulated" = dn.genes.ordered$gene_name),organism = "mmusculus", ordered_query = TRUE)
+multi_gp_drg_nippo = gost(list("up-regulated" = up.genes.ordered$GeneName,
+                     "down-regulated" = dn.genes.ordered$GeneName),organism = "mmusculus", ordered_query = TRUE)
 
 gp_drg_nippo <- gostplot(multi_gp_drg_nippo, interactive = TRUE)
 
 ## DSS
 
-drg.dss<- drg.dss[drg.dss$BaseMean > 30, ]
+
 
 up.genes <- drg.dss[drg.dss$Log2FC > 1.5, ]
 up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
@@ -405,8 +409,8 @@ dn.genes <- drg.dss[drg.dss$Log2FC < -1.5, ]
 dn.genes.ordered <- dn.genes[order(up.genes$Log2FC, decreasing = FALSE),]
 
 
-multi_gp_drg_dss = gost(list("up-regulated" = up.genes.ordered$gene_name,
-                     "down-regulated" = dn.genes.ordered$gene_name),organism = "mmusculus", ordered_query = TRUE)
+multi_gp_drg_dss = gost(list("up-regulated" = up.genes.ordered$GeneName,
+                     "down-regulated" = dn.genes.ordered$GeneName),organism = "mmusculus", ordered_query = TRUE)
 
 
 
@@ -414,7 +418,7 @@ gp_drg_dss <- gostplot(multi_gp_drg_dss, interactive = TRUE)
 
 ## Th17
 
-drg.th17 <- drg.th17[drg.th17$BaseMean > 30, ]
+
 
 up.genes <- drg.th17[drg.th17$Log2FC > 1.5, ]
 up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
@@ -423,8 +427,8 @@ dn.genes <- drg.th17[drg.th17$Log2FC < -1.5, ]
 dn.genes.ordered <- dn.genes[order(up.genes$Log2FC, decreasing = FALSE),]
 
 
-multi_gp_drg_th17 = gost(list("up-regulated" = up.genes.ordered$gene_name,
-                     "down-regulated" = dn.genes.ordered$gene_name),organism = "mmusculus", ordered_query = TRUE)
+multi_gp_drg_th17 = gost(list("up-regulated" = up.genes.ordered$GeneName,
+                     "down-regulated" = dn.genes.ordered$GeneName),organism = "mmusculus", ordered_query = TRUE)
 
 
 

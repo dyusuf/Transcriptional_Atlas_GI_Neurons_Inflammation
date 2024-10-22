@@ -1,5 +1,6 @@
 ---
 title: "ENS in inflammation: DGE & GSEA"
+author: "Patrycja Monika Topczewska"
 date: "`r Sys.Date()`"
 output:
       html_document:
@@ -17,15 +18,14 @@ Muscularis of infected and naive Snap25CreINTACT mice was isolated. Nuclei isola
 
 ```{r setup, include=FALSE, message = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-# knitr::opts_knit$set(root.dir = "/Volumes/PortableSSD/1_PhD/1_Projects/1_Neurons/2_SeqAnalysis/1_Mine")
 
 # load importante libraries
 
-library("DESeq2")
-library("limma")
-library("gProfileR")
-library("httr")
-library("RJSONIO")
+library(DESeq2)
+library(limma)
+library(gProfileR)
+library(httr)
+library(RJSONIO)
 library(pheatmap)
 library(dbplyr)
 library(dplyr)
@@ -37,22 +37,21 @@ library(plotly)
 library(RColorBrewer)
 library(viridis)
 library(readxl)
-#library(DEGreport)
 library(htmltools)
 library(vctrs)
 library(EnhancedVolcano)
 library(readr)
-library("topGO")
-library("org.Mm.eg.db")
-library("AnnotationDbi")
-library("DOSE")
-library("GO.db")
-library("GSEABase")
-library("clusterProfiler")
-library("tidyr")
-library("stringr")
-library("rWikiPathways")
-library("RCy3")
+library(topGO)
+library(org.Mm.eg.db)
+library(AnnotationDbi)
+library(DOSE)
+library(GO.db)
+library(GSEABase)
+library(clusterProfiler)
+library(tidyr)
+library(stringr)
+library(rWikiPathways)
+library(RCy3)
 library(ReactomePA)
 library(scales)
 library(gridExtra)
@@ -78,13 +77,6 @@ library(gtExtras)
 
 ```{r Import data, echo=FALSE,warning=FALSE,message = FALSE}
 
-### counts
-#
-# counts.ens <- as.data.frame(read_excel("1_ENS/Counts/ENS_Counts.xlsx"))
-# counts.drg <- as.data.frame(read_excel("DRG/Counts/DRG_Counts.xlsx"))
-# counts.smg <- as.data.frame(read_excel("SMG/Counts/SMG_Counts.xlsx"))
-# counts.vg <- as.data.frame(read_excel("VG/Counts/VG_Counts.xlsx"))
-
 
 #### norm counts
 
@@ -98,24 +90,6 @@ rownames(nc) <- nc$gene_name
 
 ### DESeq2
 
-ens.nippo <- read_excel("../data/processed/ENS_DESeq2_Nippo.xlsx")
-ens.dss <- read_excel("../data/processed/ENS_DESeq2_DSS.xlsx")
-ens.th17 <- read_excel("../data/processed/ENS_DESeq2_Th17.xlsx")
-
-#
-# drg.nippo <- read_excel("2_DRG/DESeq2/DRG_DESeq2_Nippo.xlsx")
-# drg.dss <- read_excel("2_DRG/DESeq2/DRG_DESeq2_DSS.xlsx")
-# drg.th17 <- read_excel("2_DRG/DESeq2/DRG_DESeq2_Th17.xlsx")
-#
-#
-# smg.nippo <- read_excel("3_SMG/DESeq2/SMG_DESeq2_Nippo.xlsx")
-# smg.dss <- read_excel("3_SMG/DESeq2/SMG_DESeq2_DSS.xlsx")
-# smg.th17 <- read_excel("3_SMG/DESeq2/SMG_DESeq2_Th17.xlsx")
-#
-#
-# vg.nippo <- read_excel("4_VG/DESeq2/VG_DESeq2_Nippo.xlsx")
-# vg.dss <- read_excel("4_VG/DESeq2/VG_DESeq2_DSS.xlsx")
-# vg.th17 <- read_excel("4_VG/DESeq2/VG_DESeq2_Th17.xlsx")
 
 ## for Volcano
 
@@ -124,38 +98,12 @@ ens.dss.v <- read.delim("../data/raw/DESeq2_ENS_DSS_results.tabular", header=F)
 ens.th17.v <- read.delim("../data/raw/DESeq2_ENS_Th17_results.tabular", header=F)
 
 
-# drg.nippo.v <- read.delim("2_DRG/Galaxy/DESeq2_DRG_Nippo_results.tabular", header=F)
-# drg.dss.v <- read.delim("2_DRG/Galaxy/DESeq2_DRG_DSS_results.tabular", header=F)
-# drg.th17.v <- read.delim("2_DRG/Galaxy/DESeq2_DRG_Th17_results.tabular", header=F)
-#
-#
-# smg.nippo.v <- read.delim("3_SMG/Galaxy/DESeq2_SMG_Nippo_results.tabular", header=F)
-# smg.dss.v <- read.delim("3_SMG/Galaxy/DESeq2_SMG_DSS_results.tabular", header=F)
-# smg.th17.v <- read.delim("3_SMG/Galaxy/DESeq2_SMG_Th17_results.tabular", header=F)
-#
-#
-# vg.nippo.v <- read.delim("4_VG/Galaxy/DESeq2_VG_Nippo_results.tabular", header=F)
-# vg.dss.v <- read.delim("4_VG/Galaxy/DESeq2_VG_DSS_results.tabular", header=F)
-# vg.th17.v <- read.delim("4_VG/Galaxy/DESeq2_VG_Th17_results.tabular", header=F)
 
-colnames(ens.nippo.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-colnames(ens.dss.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-colnames(ens.th17.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
+colnames(ens.nippo.v) <- c("GeneID","BaseMean","Log2FC","StdErr","WaldStat","pval","padj")
+colnames(ens.dss.v) <- c("GeneID","BaseMean","Log2FC","StdErr","WaldStat","pval","padj")
+colnames(ens.th17.v) <- c("GeneID","BaseMean","Log2FC","StdErr","WaldStat","pval","padj")
 
 
-# colnames(drg.nippo.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-# colnames(drg.dss.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-# colnames(drg.th17.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-#
-#
-# colnames(smg.nippo.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-# colnames(smg.dss.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-# colnames(smg.th17.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-#
-#
-# colnames(vg.nippo.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-# colnames(vg.dss.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-# colnames(vg.th17.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
 
 
 
@@ -191,7 +139,25 @@ anno_df$GeneName <- mapIds(org.Mm.eg.db,
                             column = "SYMBOL",
                             keytype = "ENSEMBL",
                             multiVals = "first")
+
+
 nc <- merge(nc, anno_df, by = "GeneID", all=TRUE)
+
+
+ens.nippo <- ens.nippo.v
+ens.nippo <- ens.nippo[ens.nippo$BaseMean > 30, ]
+ens.nippo <- ens.nippo[ens.nippo$padj <= 0.05, ]
+ens.nippo <- na.omit(ens.nippo)
+
+ens.dss <- ens.dss.v
+ens.dss <- ens.dss[ens.dss$BaseMean > 30, ]
+ens.dss <- ens.dss[ens.dss$padj <= 0.05, ]
+ens.dss <- na.omit(ens.dss)
+
+ens.th17 <- ens.th17.v
+ens.th17 <- ens.th17[ens.th17$BaseMean > 30, ]
+ens.th17 <- ens.th17[ens.th17$padj <= 0.05, ]
+ens.th17 <- na.omit(ens.th17)
 
 
 ```
@@ -199,18 +165,18 @@ nc <- merge(nc, anno_df, by = "GeneID", all=TRUE)
 # DESeq2
 
 ## Results {.tabset}
-### Nipoo
+### Nippo
 
 ```{r DGESeq2 Results Nippo, echo=FALSE, paged.print=TRUE, results='asis',warning=FALSE}
 
 
-ens.nippo <- na.omit(ens.nippo)
-ens.nippo <- transform(ens.nippo, pvalue=sapply(pvalue, formatC, format = "e", digits=3))
-ens.nippo <- transform(ens.nippo, padj=sapply(padj, formatC, format = "e", digits=3))
-ens.nippo <-ens.nippo  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "Wald-Stats"), funs(round(., 3)))
+
+ens.nippo1 <- transform(ens.nippo, pvalue=sapply(pval, formatC, format = "e", digits=3))
+ens.nippo1 <- transform(ens.nippo1, padj=sapply(padj, formatC, format = "e", digits=3))
+ens.nippo1 <-ens.nippo1  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "WaldStat"), funs(round(., 3)))
 
 
-ens.nippo %>%
+ens.nippo1 %>%
   gt() %>%
   tab_header(
     title = 'DGE: ENS Nippo vs Naive',
@@ -239,13 +205,13 @@ ens.nippo %>%
 ```{r DGESeq2 Results DSS, echo=FALSE, paged.print=TRUE, results='asis',warning=FALSE}
 
 
-ens.dss <- na.omit(ens.dss)
-ens.dss <- transform(ens.dss, pvalue=sapply(pvalue, formatC, format = "e", digits=3))
-ens.dss <- transform(ens.dss, padj=sapply(padj, formatC, format = "e", digits=3))
-ens.dss <-ens.dss  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "Wald-Stats"), funs(round(., 3)))
+
+ens.dss1 <- transform(ens.dss, pvalue=sapply(pval, formatC, format = "e", digits=3))
+ens.dss1 <- transform(ens.dss1, padj=sapply(padj, formatC, format = "e", digits=3))
+ens.dss1 <-ens.dss1  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "WaldStat"), funs(round(., 3)))
 
 
-ens.dss %>%
+ens.dss1 %>%
   gt() %>%
   tab_header(
     title = 'DGE: ENS DSS vs Naive',
@@ -274,13 +240,13 @@ ens.dss %>%
 ```{r DGESeq2 Results th17, echo=FALSE, paged.print=TRUE, results='asis',warning=FALSE}
 
 
-ens.th17 <- na.omit(ens.th17)
-ens.th17 <- transform(ens.th17, pvalue=sapply(pvalue, formatC, format = "e", digits=3))
-ens.th17 <- transform(ens.th17, padj=sapply(padj, formatC, format = "e", digits=3))
-ens.th17 <-ens.th17  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "Wald-Stats"), funs(round(., 3)))
+
+ens.th171 <- transform(ens.th17, pvalue=sapply(pval, formatC, format = "e", digits=3))
+ens.th171 <- transform(ens.th171, padj=sapply(padj, formatC, format = "e", digits=3))
+ens.th171 <-ens.th171  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "WaldStat"), funs(round(., 3)))
 
 
-ens.th17 %>%
+ens.th171 %>%
   gt() %>%
   tab_header(
     title = 'DGE: ENS Th17 vs Naive',
@@ -438,7 +404,7 @@ Gene Lists are filtered for Log2FoldChange: upregulated \> 1.5 & downregulated \
 
 ## ENS Nippo
 
-ens.nippo <- ens.nippo[ens.nippo$BaseMean > 30, ]
+
 
 up.genes <- ens.nippo[ens.nippo$Log2FC > 1.5, ]
 up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
@@ -446,14 +412,14 @@ up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
 dn.genes <- ens.nippo[ens.nippo$Log2FC < -1.5, ]
 dn.genes.ordered <- dn.genes[order(up.genes$Log2FC, decreasing = FALSE),]
 
-multi_gp_ens_nippo = gost(list("up-regulated" = up.genes.ordered$gene_name,
-                     "down-regulated" = dn.genes.ordered$gene_name),organism = "mmusculus", ordered_query = TRUE)
+multi_gp_ens_nippo = gost(list("up-regulated" = up.genes.ordered$GeneName,
+                     "down-regulated" = dn.genes.ordered$GeneName),organism = "mmusculus", ordered_query = TRUE)
 
 gp_ens_nippo <- gostplot(multi_gp_ens_nippo, interactive = TRUE)
 
 ## DSS
 
-ens.dss <- ens.dss[ens.dss$BaseMean > 30, ]
+
 
 up.genes <- ens.dss[ens.dss$Log2FC > 1.5, ]
 up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
@@ -462,8 +428,8 @@ dn.genes <- ens.dss[ens.dss$Log2FC < -1.5, ]
 dn.genes.ordered <- dn.genes[order(up.genes$Log2FC, decreasing = FALSE),]
 
 
-multi_gp_ens_dss = gost(list("up-regulated" = up.genes.ordered$gene_name,
-                     "down-regulated" = dn.genes.ordered$gene_name),organism = "mmusculus", ordered_query = TRUE)
+multi_gp_ens_dss = gost(list("up-regulated" = up.genes.ordered$GeneName,
+                     "down-regulated" = dn.genes.ordered$GeneName),organism = "mmusculus", ordered_query = TRUE)
 
 
 
@@ -471,7 +437,6 @@ gp_ens_dss <- gostplot(multi_gp_ens_dss, interactive = TRUE)
 
 ## Th17
 
-ens.th17 <- ens.th17[ens.th17$BaseMean > 30, ]
 
 up.genes <- ens.th17[ens.th17$Log2FC > 1.5, ]
 up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
@@ -480,8 +445,8 @@ dn.genes <- ens.th17[ens.th17$Log2FC < -1.5, ]
 dn.genes.ordered <- dn.genes[order(up.genes$Log2FC, decreasing = FALSE),]
 
 
-multi_gp_ens_th17 = gost(list("up-regulated" = up.genes.ordered$gene_name,
-                     "down-regulated" = dn.genes.ordered$gene_name),organism = "mmusculus", ordered_query = TRUE)
+multi_gp_ens_th17 = gost(list("up-regulated" = up.genes.ordered$GeneName,
+                     "down-regulated" = dn.genes.ordered$GeneName),organism = "mmusculus", ordered_query = TRUE)
 
 
 
@@ -671,69 +636,12 @@ table_ens_th17 %>%
 
 ## clusterProfiler Enrichment Analysis {.tabset}
 
-```{r GSEA with cluster Profiler, message = FALSE, echo=FALSE, warning=FALSE, results='hide'}
 
-###### ENS #################################
-
-
-ens.nippo <- ens.nippo[ens.nippo$padj <= 0.05, ]
-ens.nippo2 <- ens.nippo[abs(ens.nippo$Log2FC) > 2,]
-ens.nippo2 <- ens.nippo2[order(ens.nippo2$padj),]
-
-genes.entrez <- bitr(ens.nippo2$GeneID,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
-
-## gene list for upregulated genes
-up.genes <- ens.nippo[ens.nippo$Log2FC > 1.5, ]
-up.genes.entrez <- bitr(up.genes$GeneID,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
-## gene list for downregulated genes
-dn.genes <- ens.nippo[ens.nippo$Log2FC < -1.5, ]
-dn.genes.entrez <- bitr(dn.genes$GeneID,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
-## backbone gene list (all genes)
-bkgd.genes <- Neurons_NormCounts_symbol$GeneID
-bkgd.genes.entrez <- bitr(bkgd.genes,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
-
-
-##  https://learn.gencore.bio.nyu.edu/rna-seq-analysis/gene-set-enrichment-analysis/  #####
-
-ego_up_ens_nippo <- clusterProfiler::enrichGO(
-  gene     = up.genes.entrez[[2]],
-  OrgDb    = org.Mm.eg.db,
-  ont      = "ALL",
-  pAdjustMethod = "fdr",
-  pvalueCutoff = 0.05, #p.adjust cutoff (https://github.com/GuangchuangYu/clusterProfiler/issues/104)
-  readable = TRUE)
-
-
-ego_dn_ens_nippo <- clusterProfiler::enrichGO(
-  gene     = dn.genes.entrez[[2]],
-  universe = bkgd.genes.entrez[[2]],
-  OrgDb    = org.Mm.eg.db,
-  ont      = "ALL",
-  pAdjustMethod = "fdr",
-  pvalueCutoff = 0.05, #p.adjust cutoff (https://github.com/GuangchuangYu/clusterProfiler/issues/104)
-  readable = TRUE)
-
-ego_ens_nippo <- clusterProfiler::enrichGO(
-  gene     = genes.entrez[[2]],
-  universe = bkgd.genes.entrez[[2]],
-  OrgDb    = org.Mm.eg.db,
-  ont      = "ALL",
-  pAdjustMethod = "fdr",
-  pvalueCutoff = 0.05, #p.adjust cutoff (https://github.com/GuangchuangYu/clusterProfiler/issues/104)
-  readable = TRUE)
-
-GO_up_ens_nippo <- as.data.frame(ego_up_ens_nippo)
-GO_up_ens_nippo$query <- c("up-regulated")
-
-GO_down_ens_nippo <- as.data.frame(ego_dn_ens_nippo)
-GO_down_ens_nippo$query <- c("down-regulated")
-
-
+```{r GSEA clusterProfiler DSS, message = FALSE, echo=FALSE, warning=FALSE, results='hide'}
 
 ### DSS ###
 
 
-ens.dss <- ens.dss[ens.dss$padj <= 0.05, ]
 ens.dss2 <- ens.dss[abs(ens.dss$Log2FC) > 2,]
 ens.dss2 <- ens.dss2[order(ens.dss2$padj),]
 
@@ -747,6 +655,11 @@ up.genes.entrez <- bitr(up.genes$GeneID,fromType = "ENSEMBL",toType = "ENTREZID"
 ## gene list for downregulated genes
 dn.genes <- ens.dss[ens.dss$Log2FC < -1.5, ]
 dn.genes.entrez <- bitr(dn.genes$GeneID,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
+
+## backbone gene list (all genes)
+bkgd.genes <- Neurons_NormCounts_symbol$GeneID
+bkgd.genes.entrez <- bitr(bkgd.genes,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
+
 
 
 ##  https://learn.gencore.bio.nyu.edu/rna-seq-analysis/gene-set-enrichment-analysis/  #####
@@ -788,11 +701,79 @@ GO_down_ens_dss$query <- c("down-regulated")
 GO_ens_dss <- as.data.frame(ego_ens_dss)
 GO_ens_dss$query <- c("down-regulated")
 
+```
+
+
+```{r GSEA clusterProfiler Nippo, message = FALSE, echo=FALSE, warning=FALSE, results='hide'}
+
+###### ENS #################################
+
+
+ens.nippo2 <- ens.nippo[abs(ens.nippo$Log2FC) > 1.5,]
+
+ens.nippo2 <- ens.nippo2[order(ens.nippo2$padj),]
+
+genes.entrez <- bitr(ens.nippo2$GeneID,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
+
+## gene list for upregulated genes
+up.genes <- ens.nippo[ens.nippo$Log2FC > 1.5, ]
+up.genes.entrez <- bitr(up.genes$GeneID,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
+## gene list for downregulated genes
+dn.genes <- ens.nippo[ens.nippo$Log2FC < -1.5, ]
+dn.genes.entrez <- bitr(dn.genes$GeneID,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
+
+## backbone gene list (all genes)
+bkgd.genes <- Neurons_NormCounts_symbol$GeneID
+bkgd.genes.entrez <- bitr(bkgd.genes,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
+
+
+##  https://learn.gencore.bio.nyu.edu/rna-seq-analysis/gene-set-enrichment-analysis/  #####
+
+ego_up_ens_nippo <- clusterProfiler::enrichGO(
+  gene     = up.genes.entrez[[2]],
+  universe = bkgd.genes.entrez[[2]],
+  OrgDb    = org.Mm.eg.db,
+  ont      = "ALL",
+  pAdjustMethod = "fdr",
+  pvalueCutoff = 0.05, #p.adjust cutoff (https://github.com/GuangchuangYu/clusterProfiler/issues/104)
+  readable = TRUE)
+
+
+ego_dn_ens_nippo <- clusterProfiler::enrichGO(
+  gene     = dn.genes.entrez[[2]],
+  universe = bkgd.genes.entrez[[2]],
+  OrgDb    = org.Mm.eg.db,
+  ont      = "ALL",
+  pAdjustMethod = "fdr",
+  pvalueCutoff = 0.05, #p.adjust cutoff (https://github.com/GuangchuangYu/clusterProfiler/issues/104)
+  readable = TRUE)
+
+ego_ens_nippo <- clusterProfiler::enrichGO(
+  gene     = genes.entrez[[2]],
+  universe = bkgd.genes.entrez[[2]],
+  OrgDb    = org.Mm.eg.db,
+  ont      = "ALL",
+  pAdjustMethod = "fdr",
+  pvalueCutoff = 0.05, #p.adjust cutoff (https://github.com/GuangchuangYu/clusterProfiler/issues/104)
+  readable = TRUE)
+
+GO_up_ens_nippo <- as.data.frame(ego_up_ens_nippo)
+GO_up_ens_nippo$query <- c("up-regulated")
+
+GO_down_ens_nippo <- as.data.frame(ego_dn_ens_nippo)
+GO_down_ens_nippo$query <- c("down-regulated")
+
+
+```
+
+
+```{r GSEA clusterProfiler Th17, message = FALSE, echo=FALSE, warning=FALSE, results='hide'}
 
 ### Th17 ###
 
-ens.th17 <- ens.th17[ens.th17$padj <= 0.05, ]
-ens.th172 <- ens.th17[abs(ens.th17$Log2FC) > 2,]
+
+
+ens.th172 <- ens.th17[abs(ens.th17$Log2FC) > 1.5,]
 ens.th172 <- ens.th172[order(ens.th172$padj),]
 
 #gene_list <- gene_list[abs(gene_list) > 1.5]
@@ -804,6 +785,10 @@ up.genes.entrez <- bitr(up.genes$GeneID,fromType = "ENSEMBL",toType = "ENTREZID"
 ## gene list for downregulated genes
 dn.genes <- ens.th17[ens.th17$Log2FC < -1.5, ]
 dn.genes.entrez <- bitr(dn.genes$GeneID,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
+
+## backbone gene list (all genes)
+bkgd.genes <- Neurons_NormCounts_symbol$GeneID
+bkgd.genes.entrez <- bitr(bkgd.genes,fromType = "ENSEMBL",toType = "ENTREZID",OrgDb = org.Mm.eg.db)
 
 
 ##  https://learn.gencore.bio.nyu.edu/rna-seq-analysis/gene-set-enrichment-analysis/  #####
@@ -843,6 +828,8 @@ GO_up_ens_th17$query <- c("up-regulated")
 GO_down_ens_th17 <- as.data.frame(ego_dn_ens_th17)
 GO_down_ens_th17$query <- c("down-regulated")
 
+
+
 ```
 
 ```{r GSEA with cluster Profiler enrichGO, message = FALSE, echo=FALSE, warning=FALSE}
@@ -857,23 +844,6 @@ gg_dn_ens_dss <- dotplot(ego_dn_ens_dss, showCategory=10) + ggtitle("ENS DSS - D
 gg_up_ens_th17 <- dotplot(ego_up_ens_th17, showCategory=10) + ggtitle("ENS Th17 - UP") + scale_y_discrete(labels = function(x) str_wrap(x, width = 50))
 gg_dn_ens_th17 <- dotplot(ego_dn_ens_th17, showCategory=10) + ggtitle("ENS Th17 - DOWN") + scale_y_discrete(labels = function(x) str_wrap(x, width = 50))
 
-# legend <-  theme(legend.key.size = unit(0.2, 'cm'), #change legend key size
-#                  legend.key.height = unit(0.5, 'cm'), #change legend key height
-#                  legend.key.width = unit(0.3, 'cm'), #change legend key width
-#                  legend.title = element_text(size=8), #change legend title font size
-#                  legend.text = element_text(size=8)) #change legend text font size
-#
-# labels <- scale_y_discrete(labels = function(x) str_wrap(x, width = 200))
-# axis <-  theme(axis.text.y=element_text(size=10),axis.text.x=element_text(size=10), axis.title.x=element_text(size=8),axis.title.y=element_text(size=0),legend.text = element_text(size = 2))
-#
-#
-# ### make barplots from GO_BP top 10
-#
-# gg_up_ens <- ggplot(ens_all_up , aes(x=Count, y=reorder(ID, Count), fill=p.adjust)) + geom_bar(stat = "identity") + ggtitle("ENS Upregulated Pathways - GO:BP") + facet_wrap(~category) + theme_bw() + labels + axis + legend + scale_fill_continuous(type="viridis")
-# gg_dn_ens <- ggplot(ens_all_dn, aes(x=Count, y=reorder(ID, Count), fill=p.adjust)) + geom_bar(stat = "identity") + ggtitle("ENS Downregulated Pathways - GO:BP") + facet_wrap(~category) + theme_bw() + labels + axis + legend + scale_fill_continuous(type="viridis")
-#
-#
-# grid.arrange(gg_up_ens, gg_dn_ens, ncol=1, nrow = 2)
 
 ```
 

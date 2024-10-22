@@ -1,5 +1,6 @@
 ---
 title: "SMG in inflammation: DGE & GSEA"
+author: "Patrycja Monika Topczewska"
 date: "`r Sys.Date()`"
 output:
       html_document:
@@ -17,15 +18,14 @@ SMG of infected and naive Snap25CreINTACT mice were isolated. Nuclei isolation w
 
 ```{r setup, include=FALSE, message = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-# knitr::opts_knit$set(root.dir = "/Volumes/PortableSSD/1_PhD/1_Projects/1_Neurons/2_SeqAnalysis/1_Mine")
 
 # load importante libraries
 
-library("DESeq2")
-library("limma")
-library("gProfileR")
-library("httr")
-library("RJSONIO")
+library(DESeq2)
+library(limma)
+library(gProfileR)
+library(httr)
+library(RJSONIO)
 library(pheatmap)
 library(dbplyr)
 library(dplyr)
@@ -42,17 +42,17 @@ library(htmltools)
 library(vctrs)
 library(EnhancedVolcano)
 library(readr)
-library("topGO")
-library("org.Mm.eg.db")
-library("AnnotationDbi")
-library("DOSE")
-library("GO.db")
-library("GSEABase")
-library("clusterProfiler")
-library("tidyr")
-library("stringr")
-library("rWikiPathways")
-library("RCy3")
+library(topGO)
+library(org.Mm.eg.db)
+library(AnnotationDbi)
+library(DOSE)
+library(GO.db)
+library(GSEABase)
+library(clusterProfiler)
+library(tidyr)
+library(stringr)
+library(rWikiPathways)
+library(RCy3)
 library(ReactomePA)
 library(scales)
 library(gridExtra)
@@ -91,14 +91,6 @@ rownames(nc) <- nc$gene_name
 
 ### DESeq2
 
-smg.nippo <- read_excel("../data/processed/SMG_DESeq2_Nippo.xlsx")
-smg.dss <- read_excel("../data/processed/SMG_DESeq2_DSS.xlsx")
-smg.th17 <- read_excel("../data/processed/SMG_DESeq2_Th17.xlsx")
-
-
-# vg.nippo <- read_excel("VG/DESeq2/VG_DESeq2_Nippo.xlsx")
-# vg.dss <- read_excel("VG/DESeq2/VG_DESeq2_DSS.xlsx")
-# vg.th17 <- read_excel("VG/DESeq2/VG_DESeq2_Th17.xlsx")
 
 ## for Volcano
 
@@ -107,19 +99,13 @@ smg.dss.v <- read.delim("../data/raw/DESeq2_SMG_DSS_results.tabular", header=F)
 smg.th17.v <- read.delim("../data/raw/DESeq2_SMG_Th17_results.tabular", header=F)
 
 
-# vg.nippo.v <- read.delim("VG/Galaxy/DESeq2_VG_Nippo_results.tabular", header=F)
-# vg.dss.v <- read.delim("VG/Galaxy/DESeq2_VG_DSS_results.tabular", header=F)
-# vg.th17.v <- read.delim("VG/Galaxy/DESeq2_VG_Th17_results.tabular", header=F)
 
 
-colnames(smg.nippo.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-colnames(smg.dss.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-colnames(smg.th17.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
+colnames(smg.nippo.v) <- c("GeneID","BaseMean","Log2FC","StdErr","WaldStat","pval","padj")
+colnames(smg.dss.v) <- c("GeneID","BaseMean","Log2FC","StdErr","WaldStat","pval","padj")
+colnames(smg.th17.v) <- c("GeneID","BaseMean","Log2FC","StdErr","WaldStat","pval","padj")
 
 
-# colnames(vg.nippo.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-# colnames(vg.dss.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
-# colnames(vg.th17.v) <- c("GeneID","BaseMEan","Log2FC","StdErr","WaldStat","pval","padj")
 
 
 anno_df <- data.frame(GeneID = smg.nippo.v$GeneID, stringsAsFactors = FALSE)
@@ -147,6 +133,22 @@ anno_df$GeneName <- mapIds(org.Mm.eg.db,
 smg.th17.v <- merge(smg.th17.v, anno_df, by = "GeneID", all=TRUE)
 
 
+smg.nippo <- smg.nippo.v
+smg.nippo <- smg.nippo[smg.nippo$BaseMean > 30, ]
+smg.nippo <- smg.nippo[smg.nippo$padj <= 0.05, ]
+smg.nippo <- na.omit(smg.nippo)
+
+smg.dss <- smg.dss.v
+smg.dss <- smg.dss[smg.dss$BaseMean > 30, ]
+smg.dss <- smg.dss[smg.dss$padj <= 0.05, ]
+smg.dss <- na.omit(smg.dss)
+
+smg.th17 <- smg.th17.v
+smg.th17 <- smg.th17[smg.th17$BaseMean > 30, ]
+smg.th17 <- smg.th17[smg.th17$padj <= 0.05, ]
+smg.th17 <- na.omit(smg.th17)
+
+
 ```
 
 # DESeq2
@@ -156,13 +158,12 @@ smg.th17.v <- merge(smg.th17.v, anno_df, by = "GeneID", all=TRUE)
 ```{r DGESeq2 Results Nippo, echo=FALSE, paged.print=TRUE, results='asis',warning=FALSE}
 
 
-smg.nippo <- na.omit(smg.nippo)
-smg.nippo <- transform(smg.nippo, pvalue=sapply(pvalue, formatC, format = "e", digits=3))
-smg.nippo <- transform(smg.nippo, padj=sapply(padj, formatC, format = "e", digits=3))
-smg.nippo <-smg.nippo  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "Wald-Stats"), funs(round(., 3)))
+smg.nippo1 <- transform(smg.nippo, pvalue=sapply(pval, formatC, format = "e", digits=3))
+smg.nippo1 <- transform(smg.nippo1, padj=sapply(padj, formatC, format = "e", digits=3))
+smg.nippo1 <-smg.nippo1  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "WaldStat"), funs(round(., 3)))
 
 
-smg.nippo %>%
+smg.nippo1 %>%
   gt() %>%
   tab_header(
     title = 'DGE: SMG Nippo vs Naive',
@@ -191,13 +192,13 @@ smg.nippo %>%
 ```{r DGESeq2 Results DSS, echo=FALSE, paged.print=TRUE, results='asis',warning=FALSE}
 
 
-smg.dss <- na.omit(smg.dss)
-smg.dss <- transform(smg.dss, pvalue=sapply(pvalue, formatC, format = "e", digits=3))
-smg.dss <- transform(smg.dss, padj=sapply(padj, formatC, format = "e", digits=3))
-smg.dss <-smg.dss  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "Wald-Stats"), funs(round(., 3)))
+
+smg.dss1 <- transform(smg.dss, pvalue=sapply(pval, formatC, format = "e", digits=3))
+smg.dss1 <- transform(smg.dss1, padj=sapply(padj, formatC, format = "e", digits=3))
+smg.dss1 <-smg.dss1  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "WaldStat"), funs(round(., 3)))
 
 
-smg.dss %>%
+smg.dss1 %>%
   gt() %>%
   tab_header(
     title = 'DGE: SMG DSS vs Naive',
@@ -226,13 +227,13 @@ smg.dss %>%
 ```{r DGESeq2 Results th17, echo=FALSE, paged.print=TRUE, results='asis',warning=FALSE}
 
 
-smg.th17 <- na.omit(smg.th17)
-smg.th17 <- transform(smg.th17, pvalue=sapply(pvalue, formatC, format = "e", digits=3))
-smg.th17 <- transform(smg.th17, padj=sapply(padj, formatC, format = "e", digits=3))
-smg.th17 <-smg.th17  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "Wald-Stats"), funs(round(., 3)))
+
+smg.th171 <- transform(smg.th17, pvalue=sapply(pval, formatC, format = "e", digits=3))
+smg.th171 <- transform(smg.th171, padj=sapply(padj, formatC, format = "e", digits=3))
+smg.th171 <-smg.th171  %>% mutate_at(vars("BaseMean", "Log2FC", "StdErr", "WaldStat"), funs(round(., 3)))
 
 
-smg.th17 %>%
+smg.th171 %>%
   gt() %>%
   tab_header(
     title = 'DGE: SMG Th17 vs Naive',
@@ -392,7 +393,7 @@ Gene Lists are filtered for Log2FoldChange: upregulated \> 1.5 & downregulated \
 
 ## SMG Nippo
 
-smg.nippo <- smg.nippo[smg.nippo$BaseMean > 50, ]
+
 
 up.genes <- smg.nippo[smg.nippo$Log2FC > 1.5, ]
 up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
@@ -400,13 +401,13 @@ up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
 dn.genes <- smg.nippo[smg.nippo$Log2FC < -1.5, ]
 dn.genes.ordered <- dn.genes[order(up.genes$Log2FC, decreasing = FALSE),]
 
-multi_gp_smg_nippo = gost(list("up-regulated" = up.genes.ordered$gene_name,
-                     "down-regulated" = dn.genes.ordered$gene_name),organism = "mmusculus", ordered_query = TRUE)
+multi_gp_smg_nippo = gost(list("up-regulated" = up.genes.ordered$GeneName,
+                     "down-regulated" = dn.genes.ordered$GeneName),organism = "mmusculus", ordered_query = TRUE)
 
 gp_smg_nippo <- gostplot(multi_gp_smg_nippo, interactive = TRUE)
 
 ## DSS
-smg.dss <- smg.dss[smg.dss$BaseMean > 50, ]
+
 
 up.genes <- smg.dss[smg.dss$Log2FC > 1.5, ]
 up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
@@ -415,15 +416,15 @@ dn.genes <- smg.dss[smg.dss$Log2FC < -1.5, ]
 dn.genes.ordered <- dn.genes[order(up.genes$Log2FC, decreasing = FALSE),]
 
 
-multi_gp_smg_dss = gost(list("up-regulated" = up.genes.ordered$gene_name,
-                     "down-regulated" = dn.genes.ordered$gene_name),organism = "mmusculus", ordered_query = TRUE)
+multi_gp_smg_dss = gost(list("up-regulated" = up.genes.ordered$GeneName,
+                     "down-regulated" = dn.genes.ordered$GeneName),organism = "mmusculus", ordered_query = TRUE)
 
 
 
 gp_smg_dss <- gostplot(multi_gp_smg_dss, interactive = TRUE)
 
 ## Th17
-smg.th17 <- smg.th17[smg.th17$BaseMean > 50, ]
+
 
 up.genes <- smg.th17[smg.th17$Log2FC > 1.5, ]
 up.genes.ordered <- up.genes[order(up.genes$Log2FC, decreasing = TRUE),]
@@ -432,8 +433,8 @@ dn.genes <- smg.th17[smg.th17$Log2FC < -1.5, ]
 dn.genes.ordered <- dn.genes[order(up.genes$Log2FC, decreasing = FALSE),]
 
 
-multi_gp_smg_th17 = gost(list("up-regulated" = up.genes.ordered$gene_name,
-                     "down-regulated" = dn.genes.ordered$gene_name),organism = "mmusculus", ordered_query = TRUE)
+multi_gp_smg_th17 = gost(list("up-regulated" = up.genes.ordered$GeneName,
+                     "down-regulated" = dn.genes.ordered$GeneName),organism = "mmusculus", ordered_query = TRUE)
 
 
 
