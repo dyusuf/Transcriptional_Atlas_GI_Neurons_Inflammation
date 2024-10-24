@@ -1152,7 +1152,6 @@ k_smg_th17 <- setReadable(k_smg_th17, OrgDb = org.Mm.eg.db, keyType="ENTREZID")
 k_smg_th17@result$Description <- gsub(k_smg_th17@result$Description, pattern="\\s-\\sMus.+$", replacement="")
 
 kt_smg_th17 <- k_smg_th17@result
-write.csv(k_smg_th17, file="Wikipath_SMG.csv")
 
 kegg_smg_th17 <- dotplot(k_smg_th17, showCategory = 10, title = "KEGG: SMG - Th17" , split=".sign") + facet_grid(.~.sign) + scale_y_discrete(labels = function(x) str_wrap(x, width = 30)) + scale_color_gradient(low="#FFB500",high="#1400FF")
 

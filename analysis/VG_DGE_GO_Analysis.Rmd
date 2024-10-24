@@ -18,7 +18,6 @@ VG of infected and naive Snap25CreINTACT mice were isolated. Nuclei isolation wa
 
 ```{r setup, include=FALSE, message = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-knitr::opts_knit$set(root.dir = "/Volumes/PortableSSD/1_PhD/1_Projects/1_Neurons/2_SeqAnalysis/1_Mine")
 
 # load importante libraries
 
