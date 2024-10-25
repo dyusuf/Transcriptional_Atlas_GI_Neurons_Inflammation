@@ -2,6 +2,8 @@
 
 Welcome to the project repository for the **Transcriptional Atlas of Gastrointestinal (GI) Neurons During Inflammation**. This repository contains the code, data, and analysis associated with our manuscript, which aims to create a comprehensive transcriptional atlas of GI neurons in response to inflammatory conditions.
 
+You can view the project on our [GitHub repository](https://github.com/dyusuf/Transcriptional_Atlas_GI_Neurons_Inflammation).
+
 ## RNA-seq analysis
 
 A transcriptional atlas of gut-innervating neurons reveals activation of the interferon and ferroptosis pathway during intestinal inflammation.
