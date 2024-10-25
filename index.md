@@ -20,12 +20,8 @@ Each analysis report is available in HTML format and can be viewed below:
 
 
 ### Instructions to Reproduce
-You can reproduce the analysis by running the following RMarkdown files:
-- **[DRG Analysis](analysis/DRG_DGE_GO_Analysis.Rmd)**
-- **[ENS Analysis](analysis/ENS_DGE_GO_Analysis.Rmd)**
-- **[SMG Analysis](analysis/SMG_DGE_GO_Analysis.Rmd)**
-- **[VG Analysis](analysis/VG_DGE_GO_Analysis.Rmd)**
 
+You can reproduce the analysis by downloading our [GitHub repository](https://github.com/dyusuf/Transcriptional_Atlas_GI_Neurons_Inflammation/archive/refs/heads/main.zip) and running the RMarkdown files located in the `analysis` folder.
 
 ## Protein Network Analysis
 
