@@ -1,4 +1,6 @@
-# Transcriptional Atlas of GI Neurons During Inflammation
+---
+title: "Transcriptional Atlas of GI Neurons During Inflammation"
+---
 
 Welcome to the project repository for the **Transcriptional Atlas of Gastrointestinal (GI) Neurons During Inflammation**. This repository contains the code, data, and analysis associated with our manuscript, which aims to create a comprehensive transcriptional atlas of GI neurons in response to inflammatory conditions.
 
