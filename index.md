@@ -29,7 +29,7 @@ You can reproduce the analysis by downloading our [GitHub repository](https://gi
 
 ## Protein Network Analysis
 
-In addition to the transcriptional analysis, we performed a comprehensive protein network analysis to explore the interactions and pathways involved in the inflammatory response of GI neurons. For more details and specific use cases, please refer to the [AxoWIse user case description]().
+In addition to the transcriptional analysis, we performed a comprehensive protein network analysis to explore the interactions and pathways involved in the inflammatory response of GI neurons. For more details and specific use cases, please refer to the [AxoWIse](https://github.com/BackofenLab/AxoWise) github repo.
 
 
 ## Contact
